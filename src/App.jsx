@@ -1,26 +1,20 @@
-import { useState } from "react";
-import "./App.css";
+import React from "react";
 
-const Card = ({ title }) => {
-  const [like, setLike] = useState(false);
+const App = () => {
   return (
-    <div className="card">
-      <h2>{title}</h2>
+    <main>
+      <div className="pattern" />
 
-      <button onClick={()=>setLike(!like)}>
-        {like ? "liked":"like"}
-      </button>
-    </div>
+      <div className="wrapper">
+        <header>
+          <h1>
+            Find <span className="text-gradient">Movies</span> You'll Enjoy
+            Without The Hassle
+          </h1>
+        </header>
+      </div>
+    </main>
   );
 };
-function App() {
-  return (
-    <div className="card-container">
-      <Card title="apps" />
-      <Card title="apps" />
-      <Card title="apps" />
-    </div>
-  );
-}
 
 export default App;

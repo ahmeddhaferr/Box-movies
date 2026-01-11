@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Search from "./components/Search";
+import MovieCard from "./components/MovieCard";
+import { OrbitProgress } from "react-loading-indicators";
+import { useDebounce } from "react-use";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
 
@@ -18,11 +21,16 @@ const App = () => {
   const [errorMsg, setErrorMsg] = useState("");
   const [movieList, setMovieList] = useState([]);
   const [isLoading, setIisLoading] = useState(false);
-  const fetchMovies = async () => {
+  const [debounced, setDebounced] = useState("second");
+
+  useDebounce(() => setDebounced(searchTerm), 700, [searchTerm]);
+  const fetchMovies = async (query = "") => {
     setIisLoading(true);
     setErrorMsg("");
     try {
-      const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc.`;
+      const endpoint = query
+        ? `${API_BASE_URL}/search/movie?query=${encodeURIComponent(query)}`
+        : `${API_BASE_URL}/discover/movie?sort_by=popularity.desc.`;
       const respons = await fetch(endpoint, API_OPTIONS);
       if (!respons.ok) {
         throw new Error("Faild to fetch movies");
@@ -44,8 +52,8 @@ const App = () => {
   };
 
   useEffect(() => {
-    fetchMovies();
-  }, []);
+    fetchMovies(debounced);
+  }, [debounced]);
   return (
     <main>
       <div className="pattern" />
@@ -63,14 +71,13 @@ const App = () => {
           <h2> All movies</h2>
 
           {isLoading ? (
-            <p className="text-whaite">Loading...</p>
+            <OrbitProgress color="#7c84ff" size="medium" text="" textColor="" />
           ) : errorMsg ? (
             <p className="text-red-500">{errorMsg}</p>
           ) : (
             <ul>
               {movieList.map((movie) => (
-
-                <p className="text-white" key={movie.id}>{movie.title}</p>
+                <MovieCard key={movie.id} movie={movie} />
               ))}
             </ul>
           )}
